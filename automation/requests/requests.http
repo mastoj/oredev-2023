@@ -1,0 +1,13 @@
+POST http://localhost:3000/
+Content-Type: application/json
+
+{
+  "resourceGroupName": "somename",
+  "stackName": "somestack"
+}
+
+### List stacks
+GET http://localhost:3000/
+
+### Delete stack
+DELETE http://localhost:3000/tomasstack
