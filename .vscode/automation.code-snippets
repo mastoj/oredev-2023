@@ -1,0 +1,258 @@
+{
+  // Place your oredev-2023 workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and
+  // description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope
+  // is left empty or omitted, the snippet gets applied to all languages. The prefix is what is
+  // used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+  // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders.
+  // Placeholders with the same ids are connected.
+  // Example:
+  "Simple resource": {
+    "scope": "typescript",
+    "prefix": "pa1",
+    "body": [
+      "import * as pulumi from \"@pulumi/pulumi\";",
+      "import * as azure from \"@pulumi/azure-native\";",
+      "",
+      "class MyResource extends pulumi.ComponentResource {",
+      "	resourceGroupName: pulumi.Output<string>;",
+      "	constructor(name: string) {",
+      "		super(\"oredev:myresource\", name);",
+      "		const resourceGroup = new azure.resources.ResourceGroup(name, {",
+      "			location: \"West Europe\",",
+      "		});",
+      "		this.resourceGroupName = resourceGroup.name;",
+      "	}",
+      "}",
+      "",
+      "const myResource = new MyResource(\"my-resource\");",
+      "",
+      "export const resourceGroupName = myResource.resourceGroupName;"
+    ],
+    "description": "Create a simple resource"
+  },
+  "Add stack reference": {
+    "scope": "typescript",
+    "prefix": "pa2",
+    "body": [
+      "const devReference = new pulumi.StackReference(\"tomasja/oredevdemo/dev\");"
+    ],
+    "description": "Add stack reference"
+  },
+	"Get output from stack": {
+		"scope": "typescript",
+		"prefix": "pa3",
+		"body": [
+			"export const devResourceGroupName =
+  devReference.getOutputValue(\"resourceGroupName\");"
+		],
+	},
+	"Create simple program": {
+		"scope": "typescript",
+		"prefix": "pa4",
+		"body": [
+			"const program = () => {",
+			"	const myResource = new MyResource(\"my-resource\");",
+			"	return {",
+			"		resourceGroupName: myResource.resourceGroupName,",
+			"	};",
+			"};",
+			"",
+			"export = program();",
+		],
+		"description": "Create a simple program"
+	},
+	"Create program file": {
+		"scope": "typescript",
+		"prefix": "pa5",
+		"body": [
+			"import * as pulumi from \"@pulumi/pulumi\";",
+			"import * as azure from \"@pulumi/azure-native\";",
+			"import { LocalWorkspace, Stack } from \"@pulumi/pulumi/automation\";",
+			"",
+			"class MyResource extends pulumi.ComponentResource {",
+			"	resourceGroupName: pulumi.Output<string>;",
+			"	constructor(name: string) {",
+			"		super(\"oredev:myresource\", name);",
+			"		const resourceGroup = new azure.resources.ResourceGroup(name, {",
+			"			location: \"West Europe\",",
+			"		});",
+			"		this.resourceGroupName = resourceGroup.name;",
+			"	}",
+			"}",
+			"",
+			"const program = async (resourceGroupName: string) => {",
+			"	const myResource = new MyResource(resourceGroupName);",
+			"	const result = {",
+			"		resourceGroupName: myResource.resourceGroupName,",
+			"	};",
+			"	return result;",
+			"};",
+			"",
+			"export type CreateArgs = {",
+			"	resourceGroupName: string;",
+			"	stackName: string;",
+			"};",
+			"export const up = async ({ resourceGroupName, stackName }: CreateArgs) => {",
+			"	const stack = await LocalWorkspace.createOrSelectStack({",
+			"		stackName: stackName,",
+			"		projectName: \"automation\",",
+			"		program: () => program(resourceGroupName),",
+			"	});",
+			"	const upRes = await stack.up();",
+			"	console.log(upRes.outputs);",
+			"	return upRes.outputs;",
+			"};",
+		],
+		"description": "Create a program file"
+	},
+	"Index to use program": {
+		"scope": "typescript",
+		"prefix": "pa6",
+		"body": [
+			"import * as pulumi from \"@pulumi/pulumi\";",
+			"import * as azure from \"@pulumi/azure-native\";",
+			"import { up } from \"./program\";",
+			"",
+			"const args = process.argv.slice(2);",
+			"const stackName = args[0];",
+			"const resourceGroupName = args[1];",
+			"",
+			"up({ stackName, resourceGroupName })",
+			"	.then(() => process.exit(0))",
+			"	.catch((err) => {",
+			"		console.log(err);",
+			"		process.exit(1);",
+			"	});",
+		],
+		"description": "Index to use program"
+	},
+	"Update scripts in package.json": {
+		"scope": "json",
+		"prefix": "pa7",
+		"body": [
+			"build": "tsc",
+			"start": "tsc && node bin/index.js",
+		],
+		"description": "Update scripts in package.json"
+	},
+	"Set outdir in tsconfig to bin": {
+		"scope": "json",
+		"prefix": "pa8",
+		"body": [
+			"\"outDir\": \"bin\"",
+		],
+		"description": "Set outdir in tsconfig to bin"
+	},
+	"Convert index to an api with fastify": {
+		"scope": "typescript",
+		"prefix": "pa9",
+		"body": [
+			"import { CreateArgs, up } from \"./program\";",
+			"import fastify from \"fastify\";",
+			"const app = fastify();",
+			"",
+			"app.post(\"/\", async (request, reply) => {",
+			"	const args = request.body as CreateArgs;",
+			"	const outputs = await up(args);",
+			"	reply.send({ result: \"ok\", outputs });",
+			"});",
+			"",
+			"app",
+			"	.listen({",
+			"		port: 3000,",
+			"	})",
+			"	.then(() => {",
+			"		console.log(`Server running at http://localhost:3000/`);",
+			"	});",
+		],
+		"description": "Convert index to an api with fastify"
+	},
+	"Sample request to create": {
+		"scope": "http",
+		"prefix": "pa10",
+		"body": [
+			"POST http://localhost:3000/"
+			"Content-Type: application/json"
+			""
+			"{"
+			"	\"resourceGroupName\": \"somename\","
+			"	\"stackName\": \"somestack\""
+			"}"
+		],
+		"description": "Sample request to create"
+	},
+	"Add listing of stacks to program": {
+		"scope": "typescript",
+		"prefix": "pa11",
+		"body": [
+			"export const list = async () => {",
+			"	const workspace = await LocalWorkspace.create({",
+			"		projectSettings: {",
+			"			name: `automation`,",
+			"			runtime: \"nodejs\",",
+			"		},",
+			"	});",
+			"",
+			"	const stacks = await workspace.listStacks();",
+			"	return stacks;",
+			"};",
+		],
+		"description": "Add listing of stacks to program"
+	},
+	"Add listing of stacks to api": {
+		"scope": "typescript",
+		"prefix": "pa12",
+		"body": [
+			"app.get(\"/\", async (request, reply) => {",
+			"	const stacks = await list();",
+			"	reply.send({ result: \"ok\", stacks });",
+			"});",
+		],
+		"description": "Add listing of stacks to api"
+	},
+	"Sample request to list": {
+		"scope": "http",
+		"prefix": "pa13",
+		"body": [
+			"### List stacks",
+			"GET http://localhost:3000/",
+		],
+		"description": "Sample request to list"
+	},
+	"Add destroy to program": {
+		"scope": "typescript",
+		"prefix": "pa14",
+		"body": [
+			"export const destroy = async ({ stackName }: { stackName: string }) => {",
+			"	const stack = await LocalWorkspace.createOrSelectStack({",
+			"		stackName: stackName,",
+			"		projectName: \"automation\",",
+			"		program: async () => {},",
+			"	});",
+			"	const ws = stack.workspace;",
+			"	const destroyRes = await stack.destroy();",
+			"	await ws.removeStack(stackName);",
+			"	return destroyRes;",
+			"};",
+		]
+	}, 
+	"Add delete endpoint:": {
+		"scope": "typescript",
+		"prefix": "pa15",
+		"body": [
+			"app.delete(\"/:stackName\", async (request, reply) => {",
+			"	const stackName = (request.params as any).stackName;",
+			"	const message = await destroy({ stackName });",
+			"	reply.send({ result: \"ok\", message });",
+			"});",
+		]
+	},
+	"Delete stack request": {
+		"scope": "http",
+		"prefix": "pa16",
+		"body": [
+			"### Delete stack",
+			"DELETE http://localhost:3000/somestack",
+		]
+	}
+}
