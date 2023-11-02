@@ -1,0 +1,4 @@
+config:
+  azure-native:location: WestEurope
+  oredev.environments:rgName:
+    secure: AAABAM6RqVgF52qtNUgoEle6kOG13qGoYcgBURY3pCBuk05YiA==
