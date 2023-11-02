@@ -1,5 +1,5 @@
 {
-	// Place your hellondc2022 workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// Place your hellooredev2022 workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
 	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
 	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
 	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
@@ -19,9 +19,10 @@
 		"scope": "typescript",
 		"prefix": "pi1",
 		"body": [
-"[...Array(10)].map((_, i) => {",
-"\tconst resourceGroup = new resources.ResourceGroup('resourceGroup' + i);",
-"});",
+"const rgs = [...Array(10)].map((_, i) => {",
+"\treturn new resources.ResourceGroup('resourceGroup' + i);",
+"});\n",
+"export const outputs = pulumi.all(rgs.map((rg) => rg.name));"
 		]
 	},
 	"Resource group array with name": {
@@ -75,7 +76,7 @@
 "",
 "const azureProvider = new AzureProvider('azure-provider');",
 "",
-"const rg = new ResourceGroupWithSP('rg-ndc', ",
+"const rg = new ResourceGroupWithSP('rg-oredev', ",
 "\t{ subscriptionId: subscriptionId, location: location },",
 "\t{ providers: { 'azure-native': azureProvider } });",
 		]
@@ -172,10 +173,10 @@
 "const subscriptionId = process.env.ARM_SUBSCRIPTION_ID!;",
 "const location = 'WestEurope';",
 "const azureProvider = new AzureProvider('azure-provider');",
-"const azureAdProvider = new AzureAdProvider('azure-ad-provider');",
+"const azureAdProvider = new AzureAdProvider('azure-ad-provider', {metadataHost: ''});",
 "",
 "",
-"const resourceGroupNames = ['hello-ndc'];",
+"const resourceGroupNames = ['hello-oredev'];",
 "export const resourceGroups = resourceGroupNames.map((name) => {",
 "\tconst rg = new ResourceGroupWithSP(name, ",
 "\t\t{ subscriptionId: subscriptionId, location: location },",
@@ -290,13 +291,13 @@
 "}",
 "",
 "const stack = getStack();",
-"const name = 'hello-ndc';",
+"const name = 'hello-oredev';",
 "const fullName = `\\${name}-\\${stack}`;",
 "const customHostname = `\\${fullName}.2mas.xyz`",
 "",
 "",
 "const getEnvironment = () => {",
-"\tconst environmentStack = new StackReference('tomasja/hellondc2022.environments/dev');",
+"\tconst environmentStack = new StackReference('tomasja/oredev.environments/dev');",
 "\tconst environment = environmentStack",
 "\t\t.requireOutput('resourceGroups')",
 "\t\t.apply((json: any) => json[name] as Environment);",
