@@ -1,11 +1,12 @@
 {
-    "name": "pulumi-intro",
+    "name": "oredev.deploy",
     "main": "index.ts",
     "devDependencies": {
         "@types/node": "^16"
     },
     "dependencies": {
-        "@pulumi/azure-native": "^2.14.0",
+        "@pulumi/azure-native": "^2.14.1",
+        "@pulumi/dnsimple": "^3.4.0",
         "@pulumi/pulumi": "^3.0.0"
     }
 }
