@@ -129,8 +129,8 @@
 		"scope": "json",
 		"prefix": "pa7",
 		"body": [
-			"build": "tsc",
-			"start": "tsc && node bin/index.js",
+			"\"build\": \"tsc\",",
+			"\"start\": \"tsc && node bin/index.js\"",
 		],
 		"description": "Update scripts in package.json"
 	},
