@@ -42,8 +42,7 @@
 		"scope": "typescript",
 		"prefix": "pa3",
 		"body": [
-			"export const devResourceGroupName =
-  devReference.getOutputValue(\"resourceGroupName\");"
+			"export const devResourceGroupName = devReference.getOutputValue(\"resourceGroupName\");"
 		],
 	},
 	"Create simple program": {
